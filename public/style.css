@@ -1,0 +1,195 @@
+:root {
+  --bg: #fafafa;
+  --grid: #e0e0e0;
+  --node-bg: #fff;
+  --node-border: #ccc;
+  --text: #333;
+  --accent: #0077cc;
+  --success: #28a745;
+  --danger: #dc3545;
+  --purple: #800080;
+  --panel-bg: #fff;
+  --panel-border: #ddd;
+  --move-bg: #f0f0f0;
+  --connect-bg: #f0f8ff;
+  --delete-bg: #e0e0e0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  display: flex; height: 100vh;
+  font-family: sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* PALETA */
+#palette {
+  width: 160px;
+  background: var(--panel-bg);
+  border-right: 1px solid var(--panel-border);
+  padding: 10px;
+}
+.palette-item {
+  padding: 8px; margin-bottom: 6px;
+  background: var(--accent); color: #fff;
+  text-align: center; border-radius: 4px;
+  cursor: grab; user-select: none;
+}
+
+/* CANVAS */
+#canvasContainer {
+  flex: 1; position: relative; overflow: auto;
+  background-image:
+    linear-gradient(0deg, var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 20px 20px;
+  transition: background-color 0.3s;
+}
+body.mode-move #canvasContainer { background-color: var(--move-bg); }
+body.mode-connect #canvasContainer { background-color: var(--connect-bg); }
+body.mode-delete #canvasContainer { background-color: var(--delete-bg); }
+
+#canvas {
+  position: relative; width: 2000px; height: 2000px;
+}
+
+#canvasTitle {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background: white;
+  border: 1px solid var(--node-border);
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 1000;
+}
+#canvasTitle[contenteditable="true"] {
+  outline: 2px solid var(--accent);
+  box-shadow: 0 0 10px rgba(0, 119, 204, 0.3);
+}
+#canvasTitle[contenteditable="true"]::after {
+  content: "✎";
+  margin-left: 10px;
+  color: var(--accent);
+}
+
+/* BOTONES DE MODO */
+#toolButtons {
+  position: fixed;
+  bottom: 20px; left: 180px;
+  display: flex; gap: 8px; z-index: 2000;
+}
+.mode-btn {
+  padding: 6px 10px; border: none; border-radius: 4px;
+  background: var(--accent); color: #fff; cursor: pointer;
+}
+.mode-btn.active { background: var(--success); }
+
+/* NODOS */
+.node {
+  position: absolute;
+  min-width: 120px;
+  padding: 8px 8px 8px 44px;
+  background: var(--node-bg);
+  border: 1px solid var(--node-border);
+  border-radius: 6px;
+  word-break: break-word;
+  --aura-color: var(--accent);
+}
+.node .label { display: inline-block; }
+.node .handle { position: absolute; top: 4px; left: 8px; font-size: 14px; color: var(--accent); cursor: grab; display: none; }
+.mode-move .node .handle { display: block; }
+.node .emoji { position: absolute; left: 28px; top: 50%; transform: translateY(-50%); font-size: 16px; }
+.node .conn-handle { position: absolute; right: -6px; width: 10px; height: 10px; border: 2px solid var(--accent); border-radius: 50%; background: #fff; cursor: crosshair; display: none; }
+.mode-connect .node:not([data-type="Nota"]) .conn-handle { display: block; }
+.node[data-type="Fase"], .node[data-type="Metodología"], .node[data-type="Entrada"], .node[data-type="Nodo IA"] { --aura-color: var(--purple); }
+.node[data-type="Nota"] { background: #fff8dc; border-color: #f0e68c; }
+
+/* ELIMINAR */
+.mode-delete .node:hover,
+.mode-delete .jtk-connector:hover path {
+  border-color: var(--danger) !important;
+  background: #ffe6e6 !important;
+  stroke: var(--danger) !important;
+  stroke-width: 3 !important;
+}
+.mode-delete .jtk-connector path {
+  pointer-events: stroke;
+  stroke-width: 8px !important;
+}
+
+/* TRANSFER ANIM */
+@keyframes transfer { to { stroke-dashoffset: -10; } }
+.jtk-connector.transfer path { stroke-dasharray: 5 5 !important; animation: transfer 1s linear infinite; }
+
+/* AURA */
+@keyframes aura { 0%,100% { box-shadow: 0 0 5px var(--aura-color); } 50% { box-shadow: 0 0 20px var(--aura-color); } }
+.node.completed { animation: aura 2s ease-in-out infinite; }
+.node.pending   { animation: aura 2s ease-in-out infinite; }
+
+/* PANEL PROPIEDADES */
+#propertiesPanel {
+  width: 260px;
+  background: var(--panel-bg);
+  border-left: 1px solid var(--panel-border);
+  padding: 10px; z-index: 1000; position: relative;
+}
+.hidden { display: none; }
+#propertiesPanel p.info { font-size: 0.85em; color: #666; margin-bottom: 8px; }
+#propertiesPanel select,
+#propertiesPanel textarea,
+#propertiesPanel input {
+  width: 100%; margin-bottom: 10px;
+  padding: 6px; border: 1px solid var(--node-border);
+  border-radius: 4px; color: var(--text);
+}
+
+/* IA PANEL */
+#ia-panel { border-top:1px solid var(--panel-border); padding-top:10px; margin-top:10px; }
+#ia-panel div, #ia-panel ul { margin-bottom:8px; }
+#ia-steps li { list-style: none; padding-left: 16px; position: relative; }
+#ia-steps li::before { content: '▫'; position: absolute; left:0; }
+#ia-steps li.completed::before { content: '✔️'; }
+progress { width: 100%; }
+#sendToIA, #visualizarPlanPanel { width: 100%; border: none; border-radius: 4px; padding: 6px; cursor: pointer; }
+#sendToIA { background: var(--accent); color: #fff; margin-bottom: 6px; }
+#visualizarPlanPanel { background: var(--success); color: #fff; }
+
+/* MODAL PLAN VIEWER */
+#planViewer {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); display: flex;
+  align-items: center; justify-content: center; z-index: 3000;
+}
+#planViewer.hidden { display: none; }
+#planViewerContent {
+  background: #fff; padding: 20px; border-radius: 8px;
+  width: 90%; max-width: 800px; max-height: 90%; overflow: auto;
+}
+.planViewerHeader {
+  display: flex; justify-content: flex-end; gap: 8px;
+  margin-bottom: 12px;
+}
+.planViewerHeader button { background: var(--accent); color: #fff; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+#saveConfig { background: var(--purple); }
+#planTableContainer table { width: 100%; border-collapse: collapse; }
+#planTableContainer th, #planTableContainer td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+@media print {
+  #planViewerContent { width: auto; max-width: none; }
+  .planViewerHeader { display: none; }
+}
+
+/* BOTONES FLOTANTES */
+.floating-btn {
+  position: fixed; bottom: 20px; right: 20px;
+  background: var(--accent); color: #fff;
+  border: none; padding: 10px 14px; border-radius: 4px;
+  cursor: pointer; margin-left: 6px;
+}
+.floating-btn.hidden { display: none; }
+
+/* ENDPOINTS MÁS PEQUEÑOS */
+.jtk-endpoint { width: 6px !important; height: 6px !important; }

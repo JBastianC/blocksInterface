@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Constructor de Plan Didáctico</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://unpkg.com/jsplumb@2.15.6/dist/js/jsplumb.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+</head>
+<body class="mode-move">
+  <!-- PALETA -->
+  <div id="palette">
+    <div class="palette-item" data-type="Entrada" draggable="true">Entrada</div>
+    <div class="palette-item" data-type="Campos Formativos" draggable="true">Campos Formativos</div>
+    <div class="palette-item" data-type="Fase" draggable="true">Fase</div>
+    <div class="palette-item" data-type="Contenido" draggable="true">Contenido</div>
+    <div class="palette-item" data-type="PDA" draggable="true">PDA</div>
+    <div class="palette-item" data-type="Metodología" draggable="true">Metodología</div>
+    <div class="palette-item" data-type="Nodo IA" draggable="true">Nodo IA</div>
+    <div class="palette-item" data-type="Nota" draggable="true">Nota</div>
+  </div>
+
+  <!-- CANVAS -->
+  <div id="canvasContainer">
+    <div id="canvas">
+      <h1 id="canvasTitle" contenteditable="false">Plan Didáctico</h1>
+    </div>
+  </div>
+
+  <!-- BOTONES DE MODO -->
+  <div id="toolButtons">
+    <button id="btnMove" class="mode-btn active">🖐 Mover</button>
+    <button id="btnConnect" class="mode-btn">✚ Conectar</button>
+    <button id="btnDelete" class="mode-btn">🗑 Eliminar</button>
+  </div>
+
+  <!-- PANEL DE PROPIEDADES -->
+  <div id="propertiesPanel" class="hidden">
+    <h3 id="propTitle"></h3>
+    <div id="propContent"></div>
+    <button id="saveNodeData">Guardar</button>
+
+    <!-- NUEVO: Panel IA dentro del Nodo IA -->
+    <div id="ia-panel" class="hidden">
+      <div id="ia-counter">Solicitudes IA hoy: <span id="iaCount">0</span></div>
+      <div id="ia-status">Estatus: <span id="iaStatus">—</span></div>
+      <progress id="iaProgress" max="4" value="0"></progress>
+      <ul id="ia-steps">
+        <li>Solicitud enviada</li>
+        <li>Respuesta recibida</li>
+        <li>Plan parseado</li>
+        <li>Finalizado</li>
+      </ul>
+      <button id="sendToIA">Enviar a IA</button>
+      <button id="visualizarPlanPanel" disabled>Visualizar Plan</button>
+    </div>
+  </div>
+
+  <!-- MODAL PARA VISUALIZAR/EDITAR PLAN IA -->
+  <div id="planViewer" class="hidden">
+    <div id="planViewerContent">
+      <div class="planViewerHeader">
+        <button id="closePlanViewer">✖ Cerrar</button>
+        <button id="savePlan">💾 Guardar Plan</button>
+        <button id="saveConfig">💾 Guardar Configuración</button>
+        <button id="printPlan">🖨 Imprimir Plan</button>
+      </div>
+      <div id="planTableContainer" contenteditable="true"></div>
+    </div>
+  </div>
+
+  <!-- GENERAR / VER PLAN / CARGAR CONFIG -->
+  <button id="generarPlan" class="floating-btn">Generar Plan</button>
+  <button id="verPlan" class="floating-btn hidden">Ver Plan</button>
+  <input id="uploadPlan" type="file" accept=".html,.json" class="floating-btn"/>
+
+  <script src="script.js"></script>
+</body>
+</html>
